@@ -14,10 +14,14 @@ import os
 from sklearn.neural_network import MLPClassifier
  
 print("[INFO] loading scan attributes...")
-scans, masks = datasets.load_scans()
+# ave_depth = get_ave_depth()
+# memoize: 186.
+ave_depth = 186
+scans, masks = datasets.load_scans(3, ave_depth)
 
 # partition the data into training and testing splits using 75% of
 # the data for training and the remaining 25% for testing
+
 print("[INFO] processing data...")
 # X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.33, random_state=42)
 split = train_test_split(scans, masks, test_size=0.25, random_state=42)
