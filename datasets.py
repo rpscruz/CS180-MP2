@@ -8,7 +8,6 @@ from statistics import mean
 
 dir_path = os.getcwd()
 
-
 '''
 def get_ave_depth():
     ave_depth = []
@@ -20,8 +19,6 @@ def get_ave_depth():
         ave_depth.append(mask.get_data().T.shape[0])
     return round(mean(ave_depth))
 '''
-
-
 
 from scipy.ndimage import zoom
 def load_scans(samples_len, ave_depth):
@@ -37,25 +34,26 @@ def load_scans(samples_len, ave_depth):
         mask = nibabel.load(mask_filename)
 
         print("load_scans: loaded data")
-        scan_data = scan.get_data().T
-        mask_data = np.where(mask.get_data().T != 0, 1, 0)
+        scan_data = scan.get_data()
+        mask_data = mask.get_data()
 
         print("load_scans: computing scale to uniformity")
-        scale = ave_depth/scan_data.shape[0]
+        scale = ave_depth/scan_data.shape[2]
 
         # scaled
         print("load_scans: rescaling to uniformity")
-        print("scan was", scan_data.shape)
-        scan_data = zoom(scan_data, (scale, 1, 1))
-        mask_data = zoom(mask_data, (scale, 1, 1))
+        scan_data = zoom(scan_data, (1, 1, scale))
+        mask_data = zoom(mask_data, (1, 1, scale))
 
+        mask_data = np.where(mask_data != 0, 1, 0)
+
+        # appending data to data lists
         scans.append(scan_data)
         masks.append(mask_data)
 
         print("load_scans: final output scale is")
         print(scan_data.shape)
-        #stack = np.stack([scans, scan_data])
-        print(scan_data.shape)
+        print(mask_data.shape)
 
     
     # print(scans.shape)
@@ -63,23 +61,14 @@ def load_scans(samples_len, ave_depth):
     #return 
     return np.stack(scans), np.stack(masks)
 
-
+'''
 # ave_depth = get_ave_depth()
 # memoize: 186.
 ave_depth = 186
-print("the ave is", ave_depth)
-scans, masks = load_scans(5, 186)
 
+scans, masks = load_scans(3, 186)
 print("final scans are", scans.shape)
 print("final masks are", masks.shape)
 
+'''
 
-
-# print(mask_data_transposed)
-# plt.imshow(mask_data_transposed[200])
-# plt.show()
-
-# TRY THIS
-# https://www.pyimagesearch.com/2019/02/04/keras-multiple-inputs-and-mixed-data/
-
-# https://datascience.stackexchange.com/questions/28636/how-to-create-3d-images-from-nii-file
