@@ -4,26 +4,20 @@ import matplotlib.pyplot as plt
 import numpy as np
 import skimage.segmentation as seg
 from skimage.exposure import histogram
-from statistics import mean
+import cv2
+from scipy.misc import imsave
 
 dir_path = os.getcwd()
 
-'''
-def get_ave_depth():
-    ave_depth = []
-    for i in range(0 + 1, 40 + 1): # 40 + 1): # 1-indexed data
-        print("get_ave_depth:", i)
-        mask_filename = "{}/dataset_preprocess/train/masks/Patient_{}_GT.nii.gz".format(dir_path, str(i).rjust(2, '0'))
-        mask = nibabel.load(mask_filename)
-
-        ave_depth.append(mask.get_data().T.shape[0])
-    return round(mean(ave_depth))
-'''
 
 from scipy.ndimage import zoom
-def load_scans(samples_len, ave_depth):
-    scans = []
-    masks = []
+def load_scans(samples_len):
+    scans = np.ndarray(shape=(0, 512, 512))
+    masks = np.ndarray(shape=(0, 512, 512))
+    print(scans.shape)
+    print(scans)
+
+
     for i in range(0 + 1, samples_len + 1): # 40 + 1): # 1-indexed data
         print(str(i).rjust(2, '0'))
         scan_filename = "{}/dataset_preprocess/train/scans/Patient_{}.nii.gz".format(dir_path, str(i).rjust(2, '0'))
@@ -37,38 +31,34 @@ def load_scans(samples_len, ave_depth):
         scan_data = scan.get_data()
         mask_data = mask.get_data()
 
-        print("load_scans: computing scale to uniformity")
-        scale = ave_depth/scan_data.shape[2]
-
-        # scaled
-        print("load_scans: rescaling to uniformity")
-        scan_data = zoom(scan_data, (1, 1, scale))
-        mask_data = zoom(mask_data, (1, 1, scale))
-
-        mask_data = np.where(mask_data != 0, 1, 0)
-
-        # appending data to data lists
-        scans.append(scan_data)
-        masks.append(mask_data)
-
-        print("load_scans: final output scale is")
-        print(scan_data.shape)
+        print(mask_data)
+       
         print(mask_data.shape)
+        scan_data = scan_data.T
+        mask_data = mask_data.T
+        print(mask_data.shape)
+        '''
+        for slide in range(len(scan_data)):
+            print(scan_data[slide])
+            imsave("data\\scans\\{}_{}.png".format(i, slide), scan_data[slide])
+            imsave("data\\masks\\{}_{}.png".format(i, slide), mask_data[slide])
+        '''
+        for slide in range(len(mask_data)):
+            print(mask_data[slide])
+            imsave("data\\masks\\{}_{}.png".format(i, slide), mask_data[slide])
 
-    
-    # print(scans.shape)
-    #print(masks.shape)
-    #return 
-    return np.stack(scans), np.stack(masks)
 
-'''
-# ave_depth = get_ave_depth()
-# memoize: 186.
-ave_depth = 186
+        # scans = np.concatenate((scans, scan_data), axis=0)
+        '''
+        plt.imshow(scans[0], 'gray')
+        plt.show()
+        '''
 
-scans, masks = load_scans(3, 186)
-print("final scans are", scans.shape)
-print("final masks are", masks.shape)
+        print(scans.shape)
+        print(scan_data.shape)
 
-'''
+        # test = concatenate((scan_data, scans), axis=0)
+    return scans, masks
 
+   
+scans, masks = load_scans(3)

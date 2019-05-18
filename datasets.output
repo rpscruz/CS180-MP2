@@ -1,0 +1,15 @@
+01
+load_scans: loaded file
+load_scans: loaded data
+(512, 512, 229)
+(229, 512, 512)
+02
+load_scans: loaded file
+load_scans: loaded data
+(512, 512, 246)
+(246, 512, 512)
+03
+load_scans: loaded file
+load_scans: loaded data
+(512, 512, 147)
+(147, 512, 512)
